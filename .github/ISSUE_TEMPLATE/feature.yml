@@ -1,0 +1,28 @@
+name: Feature request
+description: Propose a focused improvement for maintainers.
+title: "[Feature]: "
+labels: [enhancement, needs-triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Maintainer problem
+      description: What repeated maintenance work or risk should be addressed?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Include expected behavior and alternatives considered.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or example repositories
+      description: Share public examples that demonstrate the need.
+  - type: textarea
+    id: risks
+    attributes:
+      label: Security, privacy, and cost implications

@@ -1,0 +1,28 @@
+# Contributing
+
+Thanks for helping improve OSS Maintainer Kit.
+
+## Before opening a change
+
+1. Search existing issues and discussions.
+2. Open an issue for behavior changes or large features.
+3. Keep pull requests focused and explain the maintainer problem being solved.
+
+## Local setup
+
+```bash
+pnpm install
+pnpm check
+```
+
+API credentials are not required for unit tests. Tests must inject a `TextGenerator` rather than calling a live API. Never put real secrets in fixtures, logs, screenshots, issues, or pull requests.
+
+## Pull request checklist
+
+- Add or update tests for behavior changes.
+- Update English and Chinese documentation when user-facing behavior changes.
+- Run `pnpm check`.
+- Do not commit unrelated formatting changes.
+- Explain privacy, security, and cost implications for automation changes.
+
+Maintainers may ask for changes, close work that does not fit the roadmap, or delay merging while seeking more evidence from real repositories.

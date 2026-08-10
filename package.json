@@ -1,0 +1,72 @@
+{
+  "name": "oss-maintainer-kit",
+  "version": "0.1.0",
+  "description": "An open-source CLI and GitHub Action for pull request review, issue triage, and release notes.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "oss-maintainer": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "action.yml",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm format:check && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "keywords": [
+    "github-action",
+    "open-source",
+    "maintainer",
+    "pull-request-review",
+    "issue-triage",
+    "release-notes",
+    "openai"
+  ],
+  "author": "Kane-Wan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kane-Wan/oss-maintainer-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kane-Wan/oss-maintainer-kit/issues"
+  },
+  "homepage": "https://github.com/Kane-Wan/oss-maintainer-kit#readme",
+  "packageManager": "pnpm@11.16.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "openai": "^7.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "prettier": "^3.9.6",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  }
+}

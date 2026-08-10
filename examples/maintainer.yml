@@ -1,0 +1,23 @@
+name: Maintainer assistant
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  assist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Kane-Wan/oss-maintainer-kit@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          github-token: ${{ github.token }}
+          language: auto
+          post-comment: "false"

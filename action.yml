@@ -1,0 +1,50 @@
+name: OSS Maintainer Kit
+description: Review pull requests, triage issues, and draft release notes with the OpenAI Responses API.
+author: Kane-Wan
+
+branding:
+  icon: check-circle
+  color: blue
+
+inputs:
+  openai-api-key:
+    description: OpenAI API key. Store it in GitHub Actions secrets.
+    required: true
+  github-token:
+    description: Token used to read pull request files and optionally post comments.
+    required: false
+  mode:
+    description: auto, pr-review, issue-triage, or release-notes.
+    required: false
+    default: auto
+  model:
+    description: OpenAI model name.
+    required: false
+    default: gpt-5.6-luna
+  language:
+    description: auto, en, or zh-CN.
+    required: false
+    default: auto
+  post-comment:
+    description: Post the generated result as a pull request or issue comment.
+    required: false
+    default: "false"
+  title:
+    description: Title used by release-notes mode.
+    required: false
+  version:
+    description: Version used by release-notes mode.
+    required: false
+  content:
+    description: Change list used by release-notes mode.
+    required: false
+
+outputs:
+  task:
+    description: The task that ran.
+  result:
+    description: Generated Markdown.
+
+runs:
+  using: node20
+  main: dist/action.cjs

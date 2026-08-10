@@ -1,0 +1,43 @@
+name: Bug report
+description: Report reproducible incorrect behavior.
+title: "[Bug]: "
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve OSS Maintainer Kit. Never include API keys or private repository content.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the actual and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      placeholder: Include a minimal sanitized input when possible.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - CLI
+        - GitHub Action
+        - Library API
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Node.js version, and relevant event type.

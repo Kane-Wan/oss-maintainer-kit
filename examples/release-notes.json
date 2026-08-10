@@ -1,0 +1,5 @@
+{
+  "repository": "acme/widgets",
+  "version": "1.2.0",
+  "changes": "Added widget name validation. Fixed Windows path handling. Deprecated the legacy createWidget callback."
+}

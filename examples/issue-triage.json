@@ -1,0 +1,6 @@
+{
+  "repository": "acme/widgets",
+  "title": "Widget creation fails on Windows",
+  "body": "Running create-widget from PowerShell exits with code 1. Node.js 20.11.0, Windows 11.",
+  "labels": ["bug", "windows"]
+}

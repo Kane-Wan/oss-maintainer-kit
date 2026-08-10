@@ -1,0 +1,6 @@
+{
+  "repository": "acme/widgets",
+  "title": "Validate widget names before saving",
+  "body": "Reject empty widget names at the API boundary.",
+  "diff": "diff --git a/src/widget.ts b/src/widget.ts\n@@ -10,2 +10,5 @@\n+if (!name.trim()) {\n+  throw new Error('name is required');\n+}"
+}
