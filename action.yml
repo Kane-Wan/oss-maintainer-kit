@@ -29,6 +29,10 @@ inputs:
     description: Post the generated result as a pull request or issue comment.
     required: false
     default: "false"
+  allow-pull-request-target:
+    description: Allow pull_request_target after reviewing its secret and permission risks.
+    required: false
+    default: "false"
   title:
     description: Title used by release-notes mode.
     required: false

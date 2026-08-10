@@ -25,3 +25,8 @@ You should receive an acknowledgement within seven days. No bounty is currently 
 - API keys belong in environment variables or GitHub Actions secrets.
 - Pull request and issue content is untrusted input.
 - Generated text is advisory and must not be treated as proof that code is safe.
+- `pull_request_target` is rejected unless a maintainer explicitly enables it after reviewing the
+  secret, permission, and API-spend risks.
+
+The complete trust-boundary analysis, current controls, and residual risks are documented in
+[THREAT_MODEL.md](THREAT_MODEL.md).

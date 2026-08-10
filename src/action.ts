@@ -8,6 +8,7 @@ import {
   resolveTask,
   type PullRequestFile,
 } from "./github/format.js";
+import { assertEventAllowed } from "./security.js";
 import type { AnalysisRequest, OutputLanguage } from "./types.js";
 
 function getLanguage(): OutputLanguage {
@@ -106,6 +107,10 @@ async function requestFromContext(
 }
 
 async function run(): Promise<void> {
+  assertEventAllowed(github.context.eventName, {
+    allowPullRequestTarget: core.getBooleanInput("allow-pull-request-target"),
+  });
+
   const apiKey = core.getInput("openai-api-key") || process.env.OPENAI_API_KEY || "";
   if (!apiKey) throw new Error("openai-api-key is required.");
   core.setSecret(apiKey);

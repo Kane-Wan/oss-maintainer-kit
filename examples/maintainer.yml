@@ -8,14 +8,14 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
+  pull-requests: read
+  issues: read
 
 jobs:
   assist:
     runs-on: ubuntu-latest
     steps:
-      - uses: Kane-Wan/oss-maintainer-kit@v1
+      - uses: Kane-Wan/oss-maintainer-kit@v0.1.0
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           github-token: ${{ github.token }}

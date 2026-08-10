@@ -1,0 +1,54 @@
+name: Pilot report
+description: Share opt-in, non-sensitive feedback from a real maintainer pilot.
+title: "[Pilot]: "
+labels:
+  - pilot-feedback
+body:
+  - type: checkboxes
+    attributes:
+      label: Authorization
+      options:
+        - label: I maintain the listed repository or have permission to report this pilot publicly.
+          required: true
+        - label: This report contains no API keys, tokens, private prompts, or private repository content.
+          required: true
+  - type: input
+    attributes:
+      label: Public repository URL
+      placeholder: https://github.com/owner/repository
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Tool version and date range
+      placeholder: v0.1.0, 2026-08-10 to 2026-08-24
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Modes tested
+      multiple: true
+      options:
+        - Pull request review
+        - Issue triage
+        - Release notes
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Aggregate results
+      description: Include attempted/completed runs and accepted/edited/rejected/not-rated counts.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What helped, failed, or required editing?
+      description: Link public evidence and include negative results and false positives.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Security, privacy, and cost observations
+      description: State permissions and whether comments were enabled; do not include secrets or billing identifiers.
+    validations:
+      required: true

@@ -1,5 +1,7 @@
 export { analyze } from "./analyzer.js";
 export { OpenAITextGenerator } from "./openai-generator.js";
+export { assertEventAllowed } from "./security.js";
+export type { EventSafetyOptions } from "./security.js";
 export {
   buildPrompt,
   DEFAULT_MODEL,

@@ -19,6 +19,8 @@
     "action.yml",
     "README.md",
     "README.zh-CN.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
     "LICENSE"
   ],
   "scripts": {
@@ -28,7 +30,10 @@
     "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "pnpm format:check && pnpm typecheck && pnpm test && pnpm build"
+    "check": "pnpm format:check && pnpm typecheck && pnpm test && pnpm build",
+    "release:check": "pnpm check && pnpm pack --dry-run",
+    "prepack": "pnpm build",
+    "prepublishOnly": "pnpm check"
   },
   "keywords": [
     "github-action",

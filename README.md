@@ -1,5 +1,9 @@
 # OSS Maintainer Kit
 
+[![CI](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 [简体中文](README.zh-CN.md)
 
 OSS Maintainer Kit is an open-source CLI and GitHub Action that helps maintainers:
@@ -15,6 +19,16 @@ It uses the OpenAI Responses API, treats repository content as untrusted data, a
 ## Why this project exists
 
 Small open-source teams spend substantial time reading changes, requesting missing reproduction details, and preparing releases. This project provides a transparent, self-hostable starting point for those repetitive workflows without replacing the maintainer's final decision.
+
+## Run a verifiable pilot
+
+Start with the [ten-minute demo](docs/DEMO.md), then follow the
+[read-only pilot guide](docs/PILOT_GUIDE.md). Public adoption is listed only with maintainer
+approval in [ADOPTERS.md](ADOPTERS.md), and pilot metrics use the definitions in
+[docs/METRICS.md](docs/METRICS.md).
+
+The project currently has no verified external adopters. Honest positive, mixed, and negative
+pilot reports are welcome through the [pilot report issue form](https://github.com/Kane-Wan/oss-maintainer-kit/issues/new?template=pilot-report.yml).
 
 ## Quick start: CLI
 
@@ -62,7 +76,7 @@ Use `--output review.md` to save Markdown and `--model <model>` to override the 
 
 ## GitHub Action
 
-After this repository has a `v1` release, consumers can add:
+For an early read-only pilot, consumers can add:
 
 ```yaml
 name: Maintainer assistant
@@ -75,14 +89,14 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
+  pull-requests: read
+  issues: read
 
 jobs:
   assist:
     runs-on: ubuntu-latest
     steps:
-      - uses: Kane-Wan/oss-maintainer-kit@v1
+      - uses: Kane-Wan/oss-maintainer-kit@v0.1.0
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           github-token: ${{ github.token }}
@@ -96,21 +110,22 @@ The full example is in [`examples/maintainer.yml`](examples/maintainer.yml).
 
 ### Fork pull requests
 
-GitHub does not expose repository secrets to workflows triggered by pull requests from forks. Do not switch to `pull_request_target` and check out or execute untrusted pull request code. If you use `pull_request_target`, keep permissions minimal, do not run contributed code, and add an authorization or manual-approval gate to control API spend.
+GitHub does not expose repository secrets to workflows triggered by pull requests from forks. Do not switch to `pull_request_target` and check out or execute untrusted pull request code. The Action rejects `pull_request_target` by default. If you accept the remaining risks, set `allow-pull-request-target: "true"`, keep permissions minimal, never run contributed code, and add an authorization or manual-approval gate to control API spend.
 
 ## Action inputs
 
-| Input            | Required     | Default        | Description                                     |
-| ---------------- | ------------ | -------------- | ----------------------------------------------- |
-| `openai-api-key` | yes          | —              | OpenAI key stored in Actions secrets            |
-| `github-token`   | PR/comments  | —              | Reads PR files and optionally posts comments    |
-| `mode`           | no           | `auto`         | `pr-review`, `issue-triage`, or `release-notes` |
-| `model`          | no           | `gpt-5.6-luna` | OpenAI model                                    |
-| `language`       | no           | `auto`         | `auto`, `en`, or `zh-CN`                        |
-| `post-comment`   | no           | `false`        | Post the generated Markdown                     |
-| `content`        | release mode | —              | Change list for release notes                   |
-| `title`          | no           | inferred       | Release title                                   |
-| `version`        | no           | `Unreleased`   | Release version                                 |
+| Input                       | Required     | Default        | Description                                         |
+| --------------------------- | ------------ | -------------- | --------------------------------------------------- |
+| `openai-api-key`            | yes          | —              | OpenAI key stored in Actions secrets                |
+| `github-token`              | PR/comments  | —              | Reads PR files and optionally posts comments        |
+| `mode`                      | no           | `auto`         | `pr-review`, `issue-triage`, or `release-notes`     |
+| `model`                     | no           | `gpt-5.6-luna` | OpenAI model                                        |
+| `language`                  | no           | `auto`         | `auto`, `en`, or `zh-CN`                            |
+| `post-comment`              | no           | `false`        | Post the generated Markdown                         |
+| `allow-pull-request-target` | no           | `false`        | Explicitly allow the higher-risk event after review |
+| `content`                   | release mode | —              | Change list for release notes                       |
+| `title`                     | no           | inferred       | Release title                                       |
+| `version`                   | no           | `Unreleased`   | Release version                                     |
 
 ## Security and privacy
 
@@ -122,6 +137,8 @@ GitHub does not expose repository secrets to workflows triggered by pull request
 - Private or sensitive repository content is sent to the configured API provider. Use this tool only when that transfer is permitted by your project and organization.
 
 Report vulnerabilities according to [SECURITY.md](SECURITY.md).
+The trust boundaries, controls, and residual risks are documented in
+[THREAT_MODEL.md](THREAT_MODEL.md).
 
 ## Development
 
@@ -135,6 +152,11 @@ pnpm check
 ## Project governance
 
 - [Roadmap](ROADMAP.md)
+- [Adopters](ADOPTERS.md)
+- [Pilot guide](docs/PILOT_GUIDE.md)
+- [Metrics definitions](docs/METRICS.md)
+- [Threat model](THREAT_MODEL.md)
+- [Release process](RELEASING.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Code of conduct](CODE_OF_CONDUCT.md)
 - [Security policy](SECURITY.md)
