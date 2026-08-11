@@ -2,13 +2,13 @@
 import OpenAI from "openai";
 var OpenAITextGenerator = class {
   #client;
-  constructor(apiKey) {
+  constructor(apiKey, client) {
     if (!apiKey.trim()) {
       throw new Error(
         "OPENAI_API_KEY is required. Pass it as an environment variable or action secret."
       );
     }
-    this.#client = new OpenAI({ apiKey });
+    this.#client = client ?? new OpenAI({ apiKey });
   }
   async generate(request) {
     const response = await this.#client.responses.create({
@@ -129,9 +129,9 @@ async function analyze(request, options = {}) {
   };
 }
 
-// src/pilot.ts
+// src/evaluation.ts
 var tasks = ["pr-review", "issue-triage", "release-notes"];
-var outcomes = ["accepted", "edited", "rejected", "not-rated"];
+var controls = ["candidate", "negative-control"];
 function asRecord(value, label) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`${label} must be a JSON object.`);
@@ -144,6 +144,228 @@ function requiredString(value, label) {
   }
   return value.trim();
 }
+function optionalString(value, label) {
+  return value === void 0 ? void 0 : requiredString(value, label);
+}
+function optionalUrl(value, label) {
+  const url = optionalString(value, label);
+  if (!url) return void 0;
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error(`${label} must be an absolute HTTP or HTTPS URL.`);
+  }
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+    throw new Error(`${label} must be an absolute HTTP or HTTPS URL.`);
+  }
+  return url;
+}
+function optionalPositiveInteger(value, label) {
+  if (value === void 0) return void 0;
+  if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
+    throw new Error(`${label} must be a positive integer.`);
+  }
+  return value;
+}
+function optionalStringArray(value, label) {
+  if (value === void 0) return void 0;
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new Error(`${label} must be a non-empty array of strings.`);
+  }
+  return value.map((item, index) => requiredString(item, `${label}[${index}]`));
+}
+function parseChecks(value, index) {
+  const data = asRecord(value, `cases[${index}].checks`);
+  const checks = {
+    requiredText: optionalStringArray(data.requiredText, `cases[${index}].checks.requiredText`),
+    forbiddenText: optionalStringArray(data.forbiddenText, `cases[${index}].checks.forbiddenText`),
+    minimumCharacters: optionalPositiveInteger(
+      data.minimumCharacters,
+      `cases[${index}].checks.minimumCharacters`
+    ),
+    maximumCharacters: optionalPositiveInteger(
+      data.maximumCharacters,
+      `cases[${index}].checks.maximumCharacters`
+    )
+  };
+  if (data.requireMarkdownHeading !== void 0) {
+    if (typeof data.requireMarkdownHeading !== "boolean") {
+      throw new Error(`cases[${index}].checks.requireMarkdownHeading must be a boolean.`);
+    }
+    checks.requireMarkdownHeading = data.requireMarkdownHeading;
+  }
+  if (checks.minimumCharacters !== void 0 && checks.maximumCharacters !== void 0 && checks.minimumCharacters > checks.maximumCharacters) {
+    throw new Error(`cases[${index}].checks minimum cannot exceed maximum.`);
+  }
+  if (checks.requiredText === void 0 && checks.forbiddenText === void 0 && checks.minimumCharacters === void 0 && checks.maximumCharacters === void 0 && checks.requireMarkdownHeading === void 0) {
+    throw new Error(`cases[${index}].checks must define at least one check.`);
+  }
+  return checks;
+}
+function parseCase(value, index) {
+  const data = asRecord(value, `cases[${index}]`);
+  const task = requiredString(data.task, `cases[${index}].task`);
+  if (!tasks.includes(task)) throw new Error(`cases[${index}].task is not supported.`);
+  const control = requiredString(data.control, `cases[${index}].control`);
+  if (!controls.includes(control)) throw new Error(`cases[${index}].control is not supported.`);
+  return {
+    id: requiredString(data.id, `cases[${index}].id`),
+    task,
+    control,
+    output: requiredString(data.output, `cases[${index}].output`),
+    checks: parseChecks(data.checks, index),
+    model: optionalString(data.model, `cases[${index}].model`),
+    publicEvidenceUrl: optionalUrl(data.publicEvidenceUrl, `cases[${index}].publicEvidenceUrl`)
+  };
+}
+function parseEvaluationDataset(value) {
+  const data = asRecord(value, "Evaluation dataset");
+  const datasetKind = requiredString(data.datasetKind, "datasetKind");
+  if (datasetKind !== "demonstration" && datasetKind !== "evaluation") {
+    throw new Error('datasetKind must be "demonstration" or "evaluation".');
+  }
+  if (!Array.isArray(data.cases) || data.cases.length === 0) {
+    throw new Error("cases must be a non-empty array.");
+  }
+  const cases = data.cases.map(parseCase);
+  const ids = /* @__PURE__ */ new Set();
+  for (const item of cases) {
+    if (ids.has(item.id)) throw new Error(`Duplicate evaluation case id: ${item.id}.`);
+    ids.add(item.id);
+  }
+  return {
+    datasetKind,
+    projectVersion: requiredString(data.projectVersion, "projectVersion"),
+    description: optionalString(data.description, "description"),
+    cases
+  };
+}
+function evaluateCase(item) {
+  const output = item.output;
+  const normalized = output.toLocaleLowerCase("en-US");
+  const checks = [];
+  if (item.checks.requireMarkdownHeading !== void 0) {
+    checks.push({
+      label: "contains a Markdown heading",
+      passed: !item.checks.requireMarkdownHeading || /^#{1,6}\s+\S+/m.test(output)
+    });
+  }
+  for (const text of item.checks.requiredText ?? []) {
+    checks.push({
+      label: `contains required text: ${text}`,
+      passed: normalized.includes(text.toLocaleLowerCase("en-US"))
+    });
+  }
+  for (const text of item.checks.forbiddenText ?? []) {
+    checks.push({
+      label: `omits forbidden text: ${text}`,
+      passed: !normalized.includes(text.toLocaleLowerCase("en-US"))
+    });
+  }
+  if (item.checks.minimumCharacters !== void 0) {
+    checks.push({
+      label: `has at least ${item.checks.minimumCharacters} characters`,
+      passed: output.length >= item.checks.minimumCharacters
+    });
+  }
+  if (item.checks.maximumCharacters !== void 0) {
+    checks.push({
+      label: `has at most ${item.checks.maximumCharacters} characters`,
+      passed: output.length <= item.checks.maximumCharacters
+    });
+  }
+  const actualPass = checks.every((check) => check.passed);
+  return {
+    id: item.id,
+    task: item.task,
+    control: item.control,
+    actualPass,
+    expectationMet: item.control === "candidate" ? actualPass : !actualPass,
+    checks,
+    model: item.model,
+    publicEvidenceUrl: item.publicEvidenceUrl
+  };
+}
+function summarizeEvaluation(dataset) {
+  const results = dataset.cases.map(evaluateCase);
+  const candidateResults = results.filter((result) => result.control === "candidate");
+  const negativeResults = results.filter((result) => result.control === "negative-control");
+  const candidatePassed = candidateResults.filter((result) => result.actualPass).length;
+  const negativeControlsCaught = negativeResults.filter((result) => !result.actualPass).length;
+  const expectationsMet = results.filter((result) => result.expectationMet).length;
+  return {
+    datasetKind: dataset.datasetKind,
+    projectVersion: dataset.projectVersion,
+    description: dataset.description,
+    totalCases: results.length,
+    candidateCases: candidateResults.length,
+    candidatePassed,
+    candidatePassRate: candidateResults.length === 0 ? null : candidatePassed / candidateResults.length,
+    negativeControls: negativeResults.length,
+    negativeControlsCaught,
+    negativeControlDetectionRate: negativeResults.length === 0 ? null : negativeControlsCaught / negativeResults.length,
+    expectationsMet,
+    expectationAccuracy: expectationsMet / results.length,
+    publicEvidenceUrls: [
+      ...new Set(results.flatMap((result) => result.publicEvidenceUrl ?? []))
+    ].sort(),
+    results
+  };
+}
+function percent(value) {
+  return value === null ? "not available" : `${(value * 100).toFixed(1)}%`;
+}
+function formatEvaluationSummary(summary) {
+  const title = summary.datasetKind === "demonstration" ? "Evaluation harness demonstration \u2014 not live model evidence" : "Evaluation report";
+  const lines = [
+    `# ${title}`,
+    "",
+    "> Deterministic checks can detect missing sections and unsafe phrases, but they do not replace maintainer judgment or verify that recorded outputs came from a named model.",
+    "",
+    `- Project version: ${summary.projectVersion}`,
+    `- Cases: ${summary.totalCases}`,
+    `- Candidate output pass rate: ${percent(summary.candidatePassRate)} (${summary.candidatePassed}/${summary.candidateCases})`,
+    `- Negative-control detection rate: ${percent(summary.negativeControlDetectionRate)} (${summary.negativeControlsCaught}/${summary.negativeControls})`,
+    `- Expected behavior matched: ${percent(summary.expectationAccuracy)} (${summary.expectationsMet}/${summary.totalCases})`,
+    "",
+    "## Case results",
+    "",
+    "| Case | Task | Control | Result | Expectation |",
+    "| --- | --- | --- | --- | --- |",
+    ...summary.results.map(
+      (result) => `| ${result.id} | ${result.task} | ${result.control} | ${result.actualPass ? "pass" : "fail"} | ${result.expectationMet ? "met" : "missed"} |`
+    ),
+    "",
+    "## Failed checks",
+    ""
+  ];
+  const failures = summary.results.flatMap(
+    (result) => result.checks.filter((check) => !check.passed).map((check) => `- ${result.id}: ${check.label}`)
+  );
+  lines.push(...failures.length === 0 ? ["No checks failed."] : failures);
+  lines.push("", "## Public evidence", "");
+  lines.push(
+    ...summary.publicEvidenceUrls.length === 0 ? ["No public evidence URLs were provided."] : summary.publicEvidenceUrls.map((url) => `- ${url}`)
+  );
+  return lines.join("\n");
+}
+
+// src/pilot.ts
+var tasks2 = ["pr-review", "issue-triage", "release-notes"];
+var outcomes = ["accepted", "edited", "rejected", "not-rated"];
+function asRecord2(value, label) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${label} must be a JSON object.`);
+  }
+  return value;
+}
+function requiredString2(value, label) {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${label} must be a non-empty string.`);
+  }
+  return value.trim();
+}
 function optionalNonNegativeNumber(value, label) {
   if (value === void 0) return void 0;
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
@@ -151,9 +373,9 @@ function optionalNonNegativeNumber(value, label) {
   }
   return value;
 }
-function optionalUrl(value, label) {
+function optionalUrl2(value, label) {
   if (value === void 0) return void 0;
-  const url = requiredString(value, label);
+  const url = requiredString2(value, label);
   let parsed;
   try {
     parsed = new URL(url);
@@ -167,9 +389,9 @@ function optionalUrl(value, label) {
 }
 function parseDateRange(value) {
   if (value === void 0) return void 0;
-  const range = asRecord(value, "dateRange");
-  const start = requiredString(range.start, "dateRange.start");
-  const end = requiredString(range.end, "dateRange.end");
+  const range = asRecord2(value, "dateRange");
+  const start = requiredString2(range.start, "dateRange.start");
+  const end = requiredString2(range.end, "dateRange.end");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(start) || !/^\d{4}-\d{2}-\d{2}$/.test(end)) {
     throw new Error("dateRange values must use YYYY-MM-DD.");
   }
@@ -177,16 +399,16 @@ function parseDateRange(value) {
   return { start, end };
 }
 function parseRun(value, index) {
-  const data = asRecord(value, `runs[${index}]`);
-  const id = requiredString(data.id, `runs[${index}].id`);
-  const task = requiredString(data.task, `runs[${index}].task`);
-  if (!tasks.includes(task)) throw new Error(`runs[${index}].task is not supported.`);
+  const data = asRecord2(value, `runs[${index}]`);
+  const id = requiredString2(data.id, `runs[${index}].id`);
+  const task = requiredString2(data.task, `runs[${index}].task`);
+  if (!tasks2.includes(task)) throw new Error(`runs[${index}].task is not supported.`);
   if (typeof data.completed !== "boolean") {
     throw new Error(`runs[${index}].completed must be a boolean.`);
   }
   let outcome;
   if (data.outcome !== void 0) {
-    outcome = requiredString(data.outcome, `runs[${index}].outcome`);
+    outcome = requiredString2(data.outcome, `runs[${index}].outcome`);
     if (!outcomes.includes(outcome)) throw new Error(`runs[${index}].outcome is not supported.`);
   }
   if (!data.completed && outcome && outcome !== "not-rated") {
@@ -210,13 +432,13 @@ function parseRun(value, index) {
       `runs[${index}].estimatedMinutesSaved`
     ),
     blockingFalsePositive,
-    repository: data.repository === void 0 ? void 0 : requiredString(data.repository, `runs[${index}].repository`),
-    publicEvidenceUrl: optionalUrl(data.publicEvidenceUrl, `runs[${index}].publicEvidenceUrl`)
+    repository: data.repository === void 0 ? void 0 : requiredString2(data.repository, `runs[${index}].repository`),
+    publicEvidenceUrl: optionalUrl2(data.publicEvidenceUrl, `runs[${index}].publicEvidenceUrl`)
   };
 }
 function parsePilotDataset(value) {
-  const data = asRecord(value, "Pilot dataset");
-  const datasetKind = requiredString(data.datasetKind, "datasetKind");
+  const data = asRecord2(value, "Pilot dataset");
+  const datasetKind = requiredString2(data.datasetKind, "datasetKind");
   if (datasetKind !== "demonstration" && datasetKind !== "pilot") {
     throw new Error('datasetKind must be "demonstration" or "pilot".');
   }
@@ -235,7 +457,7 @@ function parsePilotDataset(value) {
   }
   return {
     datasetKind,
-    projectVersion: requiredString(data.projectVersion, "projectVersion"),
+    projectVersion: requiredString2(data.projectVersion, "projectVersion"),
     dateRange: parseDateRange(data.dateRange),
     maintainers,
     runs
@@ -296,7 +518,7 @@ function summarizePilot(dataset) {
     byTask
   };
 }
-function percent(value) {
+function percent2(value) {
   return value === null ? "not available" : `${(value * 100).toFixed(1)}%`;
 }
 function formatPilotSummary(summary) {
@@ -312,8 +534,8 @@ function formatPilotSummary(summary) {
     `- Public repositories represented: ${summary.repositories.length}`,
     `- Attempted runs: ${summary.attempted}`,
     `- Completed runs: ${summary.completed}`,
-    `- Workflow success rate: ${percent(summary.workflowSuccessRate)}`,
-    `- Useful-result rate: ${percent(summary.usefulResultRate)}`,
+    `- Workflow success rate: ${percent2(summary.workflowSuccessRate)}`,
+    `- Useful-result rate: ${percent2(summary.usefulResultRate)}`,
     `- Blocking false positives: ${summary.blockingFalsePositives}`,
     `- Median estimated minutes saved: ${summary.medianEstimatedMinutesSaved ?? "not available"} (n=${summary.timeSavedSampleSize})`,
     "",
@@ -327,7 +549,7 @@ function formatPilotSummary(summary) {
     "",
     "| Task | Attempted | Completed |",
     "| --- | ---: | ---: |",
-    ...tasks.map(
+    ...tasks2.map(
       (task) => `| ${task} | ${summary.byTask[task].attempted} | ${summary.byTask[task].completed} |`
     ),
     "",
@@ -343,7 +565,7 @@ function formatPilotSummary(summary) {
 }
 
 // src/version.ts
-var VERSION = "0.2.0";
+var VERSION = "0.3.0";
 
 // src/github/format.ts
 var MAX_PATCH_CHARS_PER_FILE = 8e3;
@@ -403,6 +625,9 @@ export {
   truncateContent,
   buildPrompt,
   analyze,
+  parseEvaluationDataset,
+  summarizeEvaluation,
+  formatEvaluationSummary,
   parsePilotDataset,
   summarizePilot,
   formatPilotSummary,
@@ -413,4 +638,4 @@ export {
   resolveTask,
   createAnalysisRequest
 };
-//# sourceMappingURL=chunk-GDJ7SAON.js.map
+//# sourceMappingURL=chunk-T76MMFPG.js.map

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Kane-Wan/oss-maintainer-kit/blob/main/docs/evaluation-dataset.schema.json",
+  "title": "Repo Steward AI evaluation dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["datasetKind", "projectVersion", "cases"],
+  "properties": {
+    "datasetKind": {
+      "enum": ["demonstration", "evaluation"]
+    },
+    "projectVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "task", "control", "output", "checks"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "task": {
+            "enum": ["pr-review", "issue-triage", "release-notes"]
+          },
+          "control": {
+            "enum": ["candidate", "negative-control"]
+          },
+          "output": { "type": "string", "minLength": 1 },
+          "model": { "type": "string", "minLength": 1 },
+          "publicEvidenceUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https?://"
+          },
+          "checks": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "requiredText": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "forbiddenText": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "minimumCharacters": { "type": "integer", "minimum": 1 },
+              "maximumCharacters": { "type": "integer", "minimum": 1 },
+              "requireMarkdownHeading": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

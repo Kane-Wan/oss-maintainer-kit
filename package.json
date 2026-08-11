@@ -1,6 +1,6 @@
 {
   "name": "repo-steward-ai",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A safety-conscious CLI and GitHub Action for AI-assisted pull request review, issue triage, release notes, and verifiable maintainer pilots.",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,6 +23,7 @@
     "CHANGELOG.md",
     "SECURITY.md",
     "docs",
+    "examples",
     "LICENSE"
   ],
   "scripts": {
@@ -30,6 +31,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "demo": "pnpm build && node dist/cli.js eval-summary --input examples/evaluation.example.json && node dist/cli.js pilot-summary --input examples/pilot-runs.example.json",
+    "eval:demo": "node dist/cli.js eval-summary --input examples/evaluation.example.json",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm format:check && pnpm typecheck && pnpm test && pnpm build",

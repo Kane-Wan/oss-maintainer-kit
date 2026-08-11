@@ -9,13 +9,16 @@ import {
   analyze,
   buildPrompt,
   createAnalysisRequest,
+  formatEvaluationSummary,
   formatPilotSummary,
   formatPullRequestFiles,
+  parseEvaluationDataset,
   parsePilotDataset,
   resolveTask,
+  summarizeEvaluation,
   summarizePilot,
   truncateContent
-} from "./chunk-GDJ7SAON.js";
+} from "./chunk-T76MMFPG.js";
 
 // src/security.ts
 function assertEventAllowed(eventName, options = {}) {
@@ -37,10 +40,13 @@ export {
   assertEventAllowed,
   buildPrompt,
   createAnalysisRequest,
+  formatEvaluationSummary,
   formatPilotSummary,
   formatPullRequestFiles,
+  parseEvaluationDataset,
   parsePilotDataset,
   resolveTask,
+  summarizeEvaluation,
   summarizePilot,
   truncateContent
 };

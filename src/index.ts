@@ -1,5 +1,20 @@
 export { analyze } from "./analyzer.js";
 export { OpenAITextGenerator } from "./openai-generator.js";
+export type { ResponsesClient } from "./openai-generator.js";
+export {
+  formatEvaluationSummary,
+  parseEvaluationDataset,
+  summarizeEvaluation,
+} from "./evaluation.js";
+export type {
+  EvaluationCase,
+  EvaluationCaseResult,
+  EvaluationChecks,
+  EvaluationControl,
+  EvaluationDataset,
+  EvaluationDatasetKind,
+  EvaluationSummary,
+} from "./evaluation.js";
 export { formatPilotSummary, parsePilotDataset, summarizePilot } from "./pilot.js";
 export type {
   PilotDataset,

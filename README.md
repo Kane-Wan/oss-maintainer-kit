@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Kane-Wan/oss-maintainer-kit/badge)](https://scorecard.dev/viewer/?uri=github.com/Kane-Wan/oss-maintainer-kit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 [简体中文](README.zh-CN.md)
@@ -14,7 +15,7 @@ Repo Steward AI is an open-source CLI and GitHub Action that helps maintainers:
 
 It uses the OpenAI Responses API, treats repository content as untrusted data, and never executes code from a pull request.
 
-> Status: early preview (`v0.2.0`). Maintainer judgment is required before posting or acting on generated text.
+> Status: early preview (`v0.3.0`). Maintainer judgment is required before posting or acting on generated text.
 
 The repository URL is retained for stable links, but the distribution name is `repo-steward-ai`.
 It is unrelated to the pre-existing npm package named `oss-maintainer-kit`; see the
@@ -42,6 +43,25 @@ node dist/cli.js pilot-summary --input examples/pilot-runs.example.json
 
 The example is marked as demonstration data and is never counted as adoption. See the
 [pilot data workflow](docs/PILOT_DATA.md).
+
+## Run the zero-cost demonstration
+
+The offline demonstration builds the project, checks three curated task outputs, verifies that a
+deliberately defective negative control is rejected, and summarizes synthetic pilot records. It
+does not need an API key and is not presented as live model performance:
+
+```bash
+pnpm demo
+```
+
+Run only the deterministic output checks with:
+
+```bash
+node dist/cli.js eval-summary --input examples/evaluation.example.json
+```
+
+See the [evaluation workflow](docs/QUALITY_EVALUATION.md) and the committed
+[demonstration report](docs/EVALUATION_REPORT.md).
 
 ## Quick start: CLI
 
@@ -111,7 +131,7 @@ jobs:
   assist:
     runs-on: ubuntu-latest
     steps:
-      - uses: Kane-Wan/oss-maintainer-kit@v0.2.0
+      - uses: Kane-Wan/oss-maintainer-kit@v0.3.0
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           github-token: ${{ github.token }}
@@ -170,10 +190,13 @@ pnpm check
 - [Adopters](ADOPTERS.md)
 - [Pilot guide](docs/PILOT_GUIDE.md)
 - [Pilot data workflow](docs/PILOT_DATA.md)
+- [Quality evaluation workflow](docs/QUALITY_EVALUATION.md)
+- [Evaluation harness demonstration](docs/EVALUATION_REPORT.md)
 - [Metrics definitions](docs/METRICS.md)
 - [Identity and differentiation](docs/DIFFERENTIATION.md)
 - [Threat model](THREAT_MODEL.md)
 - [Release process](RELEASING.md)
+- [Marketplace release brief](docs/MARKETPLACE.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Code of conduct](CODE_OF_CONDUCT.md)
 - [Security policy](SECURITY.md)

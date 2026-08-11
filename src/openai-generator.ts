@@ -2,16 +2,27 @@ import OpenAI from "openai";
 
 import type { GenerateTextRequest, TextGenerator } from "./types.js";
 
-export class OpenAITextGenerator implements TextGenerator {
-  readonly #client: OpenAI;
+export interface ResponsesClient {
+  responses: {
+    create(request: {
+      model: string;
+      instructions: string;
+      input: string;
+      store: false;
+    }): Promise<{ output_text: string }>;
+  };
+}
 
-  constructor(apiKey: string) {
+export class OpenAITextGenerator implements TextGenerator {
+  readonly #client: ResponsesClient;
+
+  constructor(apiKey: string, client?: ResponsesClient) {
     if (!apiKey.trim()) {
       throw new Error(
         "OPENAI_API_KEY is required. Pass it as an environment variable or action secret.",
       );
     }
-    this.#client = new OpenAI({ apiKey });
+    this.#client = client ?? new OpenAI({ apiKey });
   }
 
   async generate(request: GenerateTextRequest): Promise<string> {

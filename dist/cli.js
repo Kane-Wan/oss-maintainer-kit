@@ -3,10 +3,13 @@ import {
   VERSION,
   analyze,
   createAnalysisRequest,
+  formatEvaluationSummary,
   formatPilotSummary,
+  parseEvaluationDataset,
   parsePilotDataset,
+  summarizeEvaluation,
   summarizePilot
-} from "./chunk-GDJ7SAON.js";
+} from "./chunk-T76MMFPG.js";
 
 // src/cli.ts
 import { readFile, writeFile } from "fs/promises";
@@ -59,6 +62,7 @@ Analysis commands:
 
 Evidence command:
   pilot-summary   Aggregate privacy-conscious pilot run records without an API call
+  eval-summary    Run deterministic checks on recorded outputs without an API call
 
 Options:
   -i, --input <path>       JSON input path, or - for stdin (default: -)
@@ -116,6 +120,9 @@ async function main() {
   if (command === "pilot-summary") {
     const dataset = parsePilotDataset(JSON.parse(raw));
     markdown = formatPilotSummary(summarizePilot(dataset));
+  } else if (command === "eval-summary") {
+    const dataset = parseEvaluationDataset(JSON.parse(raw));
+    markdown = formatEvaluationSummary(summarizeEvaluation(dataset));
   } else {
     const task = parseTask(command);
     const language = parseLanguage(values.language);

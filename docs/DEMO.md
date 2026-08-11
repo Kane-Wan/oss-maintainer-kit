@@ -1,9 +1,21 @@
-# Ten-minute Demo
+# Ten-minute demo
 
 The demo uses checked-in examples. It does not claim that tests or repository code were executed
 by the model.
 
-## CLI
+## Zero-cost offline demo
+
+Build once, then exercise both evidence paths without an API key:
+
+```bash
+pnpm demo
+```
+
+The evaluation dataset contains three curated candidate outputs and one deliberately defective
+negative control. The pilot dataset is synthetic. Their headings and documentation explicitly
+separate harness behavior from live model quality and external adoption.
+
+## Live API CLI
 
 ```bash
 pnpm install
@@ -20,11 +32,13 @@ contains private repository data.
 Each command returns the documented Markdown sections for its task. Maintainers must inspect the
 result before posting it.
 
-## Offline pilot summary
+## Run one offline report
 
 The checked-in dataset is explicitly synthetic and does not require an API key:
 
 ```bash
+node dist/cli.js eval-summary --input examples/evaluation.example.json
+# or
 node dist/cli.js pilot-summary --input examples/pilot-runs.example.json
 ```
 

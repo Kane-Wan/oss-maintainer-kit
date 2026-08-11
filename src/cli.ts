@@ -6,6 +6,11 @@ import { parseArgs } from "node:util";
 
 import { analyze } from "./analyzer.js";
 import { payloadToRequest } from "./cli-input.js";
+import {
+  formatEvaluationSummary,
+  parseEvaluationDataset,
+  summarizeEvaluation,
+} from "./evaluation.js";
 import { formatPilotSummary, parsePilotDataset, summarizePilot } from "./pilot.js";
 import type { OutputLanguage, TaskKind } from "./types.js";
 import { VERSION } from "./version.js";
@@ -19,6 +24,7 @@ Analysis commands:
 
 Evidence command:
   pilot-summary   Aggregate privacy-conscious pilot run records without an API call
+  eval-summary    Run deterministic checks on recorded outputs without an API call
 
 Options:
   -i, --input <path>       JSON input path, or - for stdin (default: -)
@@ -82,6 +88,9 @@ async function main(): Promise<void> {
   if (command === "pilot-summary") {
     const dataset = parsePilotDataset(JSON.parse(raw) as unknown);
     markdown = formatPilotSummary(summarizePilot(dataset));
+  } else if (command === "eval-summary") {
+    const dataset = parseEvaluationDataset(JSON.parse(raw) as unknown);
+    markdown = formatEvaluationSummary(summarizeEvaluation(dataset));
   } else {
     const task = parseTask(command);
     const language = parseLanguage(values.language);

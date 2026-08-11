@@ -5,6 +5,30 @@ the project uses Semantic Versioning for public releases.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-11
+
+### Added
+
+- Offline `eval-summary` command, machine-readable evaluation schema, negative-control fixture,
+  and a committed demonstration report.
+- Mocked Responses API contract tests covering request storage, parameter forwarding, empty output,
+  and upstream errors without making network calls.
+- Dependency Review and OpenSSF Scorecard workflows with pinned action commits.
+- SPDX JSON SBOM generation for GitHub Release assets.
+- Zero-cost `pnpm demo` workflow and a GitHub Marketplace release brief.
+
+### Changed
+
+- Pinned GitHub Actions dependencies to reviewed immutable commit SHAs.
+- Updated the npm trusted-publishing workflow to Node.js 24 and npm's current OIDC requirements.
+- Included examples in the npm package and updated immutable Action examples to `v0.3.0`.
+
+### Security
+
+- Added a deterministic negative control that rejects outputs missing review structure or asking to
+  merge automatically.
+- Added high-severity dependency-change blocking and public supply-chain score publication.
+
 ## [0.2.0] - 2026-08-11
 
 ### Added
@@ -55,3 +79,4 @@ the project uses Semantic Versioning for public releases.
 
 [0.1.0]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.1.0
 [0.2.0]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.2.0
+[0.3.0]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.3.0

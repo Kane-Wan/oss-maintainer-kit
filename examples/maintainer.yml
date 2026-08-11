@@ -15,7 +15,7 @@ jobs:
   assist:
     runs-on: ubuntu-latest
     steps:
-      - uses: Kane-Wan/oss-maintainer-kit@v0.2.0
+      - uses: Kane-Wan/oss-maintainer-kit@v0.3.0
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           github-token: ${{ github.token }}

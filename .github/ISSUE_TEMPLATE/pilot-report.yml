@@ -21,7 +21,7 @@ body:
   - type: input
     attributes:
       label: Tool version and date range
-      placeholder: v0.1.0, 2026-08-10 to 2026-08-24
+      placeholder: v0.3.0, 2026-08-11 to 2026-08-25
     validations:
       required: true
   - type: dropdown

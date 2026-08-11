@@ -30,6 +30,10 @@ The roadmap is evidence-driven. Priorities may change after feedback from real m
 
 ## v0.3 - Safer automation
 
+- [x] Add deterministic recorded-output evaluations and a negative control
+- [x] Add mocked Responses API contract and failure-path tests
+- [x] Add Dependency Review, OpenSSF Scorecard, and release SBOM generation
+- [x] Prepare a GitHub Marketplace release brief
 - [ ] Member or label approval gate for fork pull requests
 - [ ] Idempotent label suggestions with an explicit write mode
 - [ ] Release note generation from Git tags and merged pull requests

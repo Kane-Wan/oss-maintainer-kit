@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Kane-Wan/oss-maintainer-kit/badge)](https://scorecard.dev/viewer/?uri=github.com/Kane-Wan/oss-maintainer-kit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 [English](README.md)
@@ -16,7 +17,7 @@ Repo Steward AI 是面向开源维护者的 CLI 和 GitHub Action，可用于：
 项目使用 OpenAI Responses API，将仓库内容视为不可信数据，并且不会执行 Pull Request
 中的代码。
 
-> 当前状态：早期预览版（`v0.2.0`）。发布评论、修改标签或采纳生成内容之前，必须由维护者判断。
+> 当前状态：早期预览版（`v0.3.0`）。发布评论、修改标签或采纳生成内容之前，必须由维护者判断。
 
 为保持已经提交的申请和历史链接可用，GitHub 仓库地址没有修改；新的发行包名是
 `repo-steward-ai`。本项目与更早存在的 npm 包 `oss-maintainer-kit` 无关联，也不会把该包的
@@ -44,6 +45,24 @@ node dist/cli.js pilot-summary --input examples/pilot-runs.example.json
 
 示例数据明确标记为 `demonstration`，输出也会注明“不能作为采用证据”。真实数据格式见
 [试点数据流程](docs/PILOT_DATA.md)。
+
+## 运行零成本演示
+
+离线演示会构建项目、检查三个经过整理的任务输出、确认一个故意设计的错误样本能够被
+拒绝，并汇总合成试点记录。它不需要 API Key，也不能作为实时模型性能证据：
+
+```bash
+pnpm demo
+```
+
+只运行确定性输出检查：
+
+```bash
+node dist/cli.js eval-summary --input examples/evaluation.example.json
+```
+
+详细边界见[质量评测流程](docs/QUALITY_EVALUATION.md)和已提交的
+[演示报告](docs/EVALUATION_REPORT.md)。
 
 ## CLI 快速开始
 
@@ -100,7 +119,7 @@ jobs:
   assist:
     runs-on: ubuntu-latest
     steps:
-      - uses: Kane-Wan/oss-maintainer-kit@v0.2.0
+      - uses: Kane-Wan/oss-maintainer-kit@v0.3.0
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           github-token: ${{ github.token }}

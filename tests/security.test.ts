@@ -43,4 +43,21 @@ describe("repository security invariants", () => {
 
     expect(`${ci}\n${codeql}`).not.toContain("pull_request_target");
   });
+
+  it("pins third-party actions in repository workflows to immutable commits", () => {
+    const workflows = [
+      "ci.yml",
+      "codeql.yml",
+      "dependency-review.yml",
+      "npm-publish.yml",
+      "release.yml",
+      "scorecard.yml",
+    ]
+      .map((name) => readFileSync(new URL(`../.github/workflows/${name}`, import.meta.url), "utf8"))
+      .join("\n");
+
+    expect(workflows).not.toMatch(/uses:\s+[^\s@]+@v\d/);
+    expect(workflows).toContain("publish_results: true");
+    expect(workflows).toContain("fail-on-severity: high");
+  });
 });

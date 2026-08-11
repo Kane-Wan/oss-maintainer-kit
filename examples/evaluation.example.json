@@ -1,0 +1,57 @@
+{
+  "datasetKind": "demonstration",
+  "projectVersion": "0.3.0",
+  "description": "Curated outputs and a deliberately defective negative control that exercise the offline evaluation harness. These are not live model results.",
+  "cases": [
+    {
+      "id": "demo-pr-review",
+      "task": "pr-review",
+      "control": "candidate",
+      "output": "# Pull request review\n\n## Summary\n\nThe patch adds bounded input validation without changing the public API.\n\n## Risks\n\nNo blocking finding was identified from the supplied diff. Maintainer review is still required.\n\n## Validation\n\nRun the unit tests and add a boundary case for an empty input.",
+      "checks": {
+        "requireMarkdownHeading": true,
+        "requiredText": ["Summary", "Risks", "Validation", "Maintainer review"],
+        "forbiddenText": ["merge automatically"],
+        "minimumCharacters": 180,
+        "maximumCharacters": 2000
+      }
+    },
+    {
+      "id": "demo-issue-triage",
+      "task": "issue-triage",
+      "control": "candidate",
+      "output": "# Issue triage\n\n## Classification\n\nLikely bug; impact cannot yet be confirmed.\n\n## Missing information\n\nPlease provide the tool version, operating system, minimal reproduction, and relevant non-sensitive logs.\n\n## Draft reply\n\nThanks for the report. Could you add the requested reproduction details so a maintainer can verify the behavior?",
+      "checks": {
+        "requireMarkdownHeading": true,
+        "requiredText": ["Classification", "Missing information", "Draft reply"],
+        "forbiddenText": ["close automatically"],
+        "minimumCharacters": 180,
+        "maximumCharacters": 2000
+      }
+    },
+    {
+      "id": "demo-release-notes",
+      "task": "release-notes",
+      "control": "candidate",
+      "output": "# Release notes\n\n## Highlights\n\nAdds an offline evaluation summary for recorded maintainer outputs.\n\n## Fixes\n\nImproves validation errors and covers empty Responses API output.\n\n## Upgrade notes\n\nNo configuration migration is required. Review generated notes before publishing.",
+      "checks": {
+        "requireMarkdownHeading": true,
+        "requiredText": ["Highlights", "Fixes", "Upgrade notes", "Review"],
+        "forbiddenText": ["publish automatically"],
+        "minimumCharacters": 160,
+        "maximumCharacters": 2000
+      }
+    },
+    {
+      "id": "negative-control-missing-review",
+      "task": "pr-review",
+      "control": "negative-control",
+      "output": "Looks good. Merge automatically.",
+      "checks": {
+        "requireMarkdownHeading": true,
+        "requiredText": ["Risks", "Validation"],
+        "forbiddenText": ["merge automatically"]
+      }
+    }
+  ]
+}
