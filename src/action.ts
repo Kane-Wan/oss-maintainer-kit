@@ -129,7 +129,7 @@ async function run(): Promise<void> {
 
   core.setOutput("task", result.task);
   core.setOutput("result", result.markdown);
-  await core.summary.addHeading("OSS Maintainer Kit").addRaw(result.markdown).write();
+  await core.summary.addHeading("Repo Steward AI").addRaw(result.markdown).write();
 
   if (core.getBooleanInput("post-comment")) {
     if (!commentNumber) throw new Error("This task has no issue or pull request to comment on.");

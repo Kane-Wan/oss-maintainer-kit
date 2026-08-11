@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve OSS Maintainer Kit.
+Thanks for helping improve Repo Steward AI.
 
 ## Before opening a change
 

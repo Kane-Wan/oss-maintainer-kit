@@ -17,10 +17,14 @@ silently replacing a published release tag.
 
 ## npm
 
-The package metadata and `prepublishOnly` check are ready for npm. Publication is intentionally
-separate from GitHub Releases because it requires an npm owner and authentication policy. Before
-the first publication, enable npm two-factor authentication or trusted publishing, verify the
-package name, and run `pnpm publish --access public` only from an approved environment.
+The package metadata uses the distinct name `repo-steward-ai`; the unrelated package named
+`oss-maintainer-kit` is not owned by this project. Publication is intentionally separate from
+GitHub Releases because it requires npm ownership and an authentication policy.
+
+Before the first publication, claim and verify `repo-steward-ai`, enable two-factor authentication
+or configure npm trusted publishing for this repository and the `npm` GitHub environment, then run
+the manual `Publish npm package` workflow. The workflow repeats release checks and requests npm
+provenance through GitHub's OIDC token. Never report downloads from the unrelated package.
 
 ## GitHub Marketplace
 

@@ -20,6 +20,17 @@ contains private repository data.
 Each command returns the documented Markdown sections for its task. Maintainers must inspect the
 result before posting it.
 
+## Offline pilot summary
+
+The checked-in dataset is explicitly synthetic and does not require an API key:
+
+```bash
+node dist/cli.js pilot-summary --input examples/pilot-runs.example.json
+```
+
+The report heading states that it is not adoption evidence. Replace it only with authorized real
+records collected according to [PILOT_DATA.md](PILOT_DATA.md).
+
 ## GitHub Action
 
 Follow the [read-only pilot guide](PILOT_GUIDE.md). The checked-in workflow uses read permissions,

@@ -16,7 +16,7 @@ Copy [`examples/maintainer.yml`](../examples/maintainer.yml) to
 `.github/workflows/maintainer-assistant.yml` and add `OPENAI_API_KEY` as an Actions secret.
 
 The example writes results to the job summary. It does not post comments or modify repository
-content. Keep the immutable `v0.1.0` reference during the pilot and review upgrades explicitly.
+content. Keep the immutable `v0.2.0` reference during the pilot and review upgrades explicitly.
 
 ## Suggested 14-day pilot
 
@@ -26,6 +26,10 @@ content. Keep the immutable `v0.1.0` reference during the pilot and review upgra
 4. Record blocking false positives and an estimated time-saved range.
 5. Stop the pilot if output leaks sensitive data, API spend exceeds the budget, or maintainers
    cannot reliably review results.
+
+Record only aggregate-friendly fields using [PILOT_DATA.md](PILOT_DATA.md), then generate the
+summary locally with `repo-steward pilot-summary`. Do not store raw prompts or repository content in
+the metrics dataset.
 
 ## Publish useful evidence
 

@@ -1,6 +1,6 @@
 # Threat Model
 
-This document describes the security boundaries of OSS Maintainer Kit `v0.1.x`. It is not a
+This document describes the security boundaries of Repo Steward AI `v0.2.x`. It is not a
 claim that AI output is safe or that every threat is eliminated.
 
 ## Assets to protect
@@ -17,7 +17,7 @@ claim that AI output is safe or that every threat is eliminated.
 GitHub event payload and diff (untrusted)
         |
         v
-OSS Maintainer Kit action ----> OpenAI Responses API
+Repo Steward AI action -------> OpenAI Responses API
         |                              |
         v                              v
 job summary (default)          generated Markdown (untrusted advice)

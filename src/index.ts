@@ -1,5 +1,13 @@
 export { analyze } from "./analyzer.js";
 export { OpenAITextGenerator } from "./openai-generator.js";
+export { formatPilotSummary, parsePilotDataset, summarizePilot } from "./pilot.js";
+export type {
+  PilotDataset,
+  PilotDatasetKind,
+  PilotOutcome,
+  PilotRunRecord,
+  PilotSummary,
+} from "./pilot.js";
 export { assertEventAllowed } from "./security.js";
 export type { EventSafetyOptions } from "./security.js";
 export {
@@ -9,6 +17,7 @@ export {
   SYSTEM_INSTRUCTIONS,
   truncateContent,
 } from "./prompt.js";
+export { VERSION } from "./version.js";
 export {
   createAnalysisRequest,
   formatPullRequestFiles,

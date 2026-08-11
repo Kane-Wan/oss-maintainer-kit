@@ -1,4 +1,4 @@
-# OSS Maintainer Kit
+# Repo Steward AI
 
 [![CI](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml)
@@ -6,30 +6,44 @@
 
 [English](README.md)
 
-OSS Maintainer Kit 是面向开源维护者的 CLI 和 GitHub Action，可用于：
+Repo Steward AI 是面向开源维护者的 CLI 和 GitHub Action，可用于：
 
-- 审查 Pull Request 的元数据和代码差异；
+- 审查 Pull Request 元数据和代码差异；
 - 对 Issue 进行分类并生成维护者回复草稿；
-- 将变更列表整理成结构化发布说明。
+- 将变更列表整理成结构化发布说明；
+- 在本地汇总可核验的试点记录。
 
 项目使用 OpenAI Responses API，将仓库内容视为不可信数据，并且不会执行 Pull Request
 中的代码。
 
-> 当前状态：早期预览版（`v0.1.0`）。发布评论、修改标签或采纳生成内容之前，必须由维护者判断。
+> 当前状态：早期预览版（`v0.2.0`）。发布评论、修改标签或采纳生成内容之前，必须由维护者判断。
+
+为保持已经提交的申请和历史链接可用，GitHub 仓库地址没有修改；新的发行包名是
+`repo-steward-ai`。本项目与更早存在的 npm 包 `oss-maintainer-kit` 无关联，也不会把该包的
+下载量计入本项目。详见[项目身份与差异说明](docs/DIFFERENTIATION.md)。
 
 ## 为什么做这个项目
 
-小型开源团队经常需要花费大量时间阅读变更、追问复现信息和整理版本说明。本项目提供一个透明、
-可自行部署的自动化起点，帮助处理重复工作，但不替代维护者的最终决定。
+小型开源团队经常需要花费大量时间阅读变更、追问复现信息和整理版本说明。本项目提供一个
+透明、可自行部署的自动化起点，帮助处理重复工作，但不替代维护者的最终决定。
 
 ## 运行可验证的试点
 
-先完成[十分钟演示](docs/DEMO.md)，再按照[只读试点指南](docs/PILOT_GUIDE.md)操作。
-公开采用记录只有在维护者同意并提供可验证证据后才会加入 [ADOPTERS.md](ADOPTERS.md)，
-试点统计遵循 [docs/METRICS.md](docs/METRICS.md) 中的定义。
+先完成[十分钟演示](docs/DEMO.md)，再按照[只读试点指南](docs/PILOT_GUIDE.md)操作。公开采用
+记录只有在维护者同意并提供可验证证据后才会加入 [ADOPTERS.md](ADOPTERS.md)。统计口径见
+[指标定义](docs/METRICS.md)。
 
-目前没有经过验证的外部采用者。项目欢迎真实的正面、混合或负面试点结果，但不会以互点 Star、
-虚假安装或刷下载量代替采用证据。
+目前没有经过验证的外部采用者。项目欢迎真实的正面、混合或负面结果，但不会以互点 Star、
+虚假安装或其他项目的下载量代替采用证据。
+
+可以在不调用 API 的情况下汇总结构化试点记录：
+
+```bash
+node dist/cli.js pilot-summary --input examples/pilot-runs.example.json
+```
+
+示例数据明确标记为 `demonstration`，输出也会注明“不能作为采用证据”。真实数据格式见
+[试点数据流程](docs/PILOT_DATA.md)。
 
 ## CLI 快速开始
 
@@ -52,7 +66,7 @@ node dist/cli.js release-notes --input examples/release-notes.json --language zh
 
 ## JSON 输入
 
-每个命令都支持 JSON 文件或标准输入（`--input -`）：
+三个分析命令都支持 JSON 文件或标准输入（`--input -`）：
 
 | 任务            | 常用内容字段           |
 | --------------- | ---------------------- |
@@ -60,9 +74,9 @@ node dist/cli.js release-notes --input examples/release-notes.json --language zh
 | `issue-triage`  | `body` 或 `content`    |
 | `release-notes` | `changes` 或 `content` |
 
-还可提供 `repository`、`title`、`body`、`labels` 和 `version` 等字段。使用
-`--output review.md` 保存 Markdown，使用 `--model <模型名>` 更换模型，也可以通过
-`OSS_MAINTAINER_MODEL` 设置默认模型。
+还可以提供 `repository`、`title`、`body`、`labels` 和 `version`。使用 `--output review.md`
+保存 Markdown，使用 `--model <模型名>` 更换模型。默认模型为 `gpt-5.6-luna`。推荐通过
+`REPO_STEWARD_MODEL` 设置默认模型；`OSS_MAINTAINER_MODEL` 仅作为旧版兼容变量保留。
 
 ## GitHub Action
 
@@ -86,7 +100,7 @@ jobs:
   assist:
     runs-on: ubuntu-latest
     steps:
-      - uses: Kane-Wan/oss-maintainer-kit@v0.1.0
+      - uses: Kane-Wan/oss-maintainer-kit@v0.2.0
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           github-token: ${{ github.token }}
@@ -94,21 +108,21 @@ jobs:
           post-comment: "false"
 ```
 
-完整示例位于 [`examples/maintainer.yml`](examples/maintainer.yml)。`post-comment` 默认关闭；
+完整示例位于 [`examples/maintainer.yml`](examples/maintainer.yml)。`post-comment` 默认关闭，
 结果写入工作流摘要并通过 `result` 输出。建议先观察生成质量，再单独评审是否开放写权限。
 
 ### 来自 Fork 的 Pull Request
 
 GitHub 不会向 Fork PR 触发的普通 `pull_request` 工作流提供仓库 Secrets。Action 默认拒绝
-`pull_request_target`。只有在确认工作流不会检出或执行贡献者代码、权限保持最小并设置人工授权门槛后，
-才可显式配置 `allow-pull-request-target: "true"`。即便如此，仍存在 API 额度被滥用的风险。
+`pull_request_target`。只有在确认工作流不会检出或执行贡献者代码、权限保持最小并设置人工授权
+门槛后，才可显式配置 `allow-pull-request-target: "true"`。即便如此，仍存在 API 额度被滥用的风险。
 
 ## Action 输入
 
 | 输入                        | 必需     | 默认值         | 说明                                           |
 | --------------------------- | -------- | -------------- | ---------------------------------------------- |
 | `openai-api-key`            | 是       | —              | 存放在 Actions Secrets 中的 OpenAI Key         |
-| `github-token`              | PR/评论  | —              | 读取 PR 文件，并在显式开启时发布评论           |
+| `github-token`              | PR/评论  | —              | 读取 PR 文件并在显式开启时发布评论             |
 | `mode`                      | 否       | `auto`         | `pr-review`、`issue-triage` 或 `release-notes` |
 | `model`                     | 否       | `gpt-5.6-luna` | OpenAI 模型                                    |
 | `language`                  | 否       | `auto`         | `auto`、`en` 或 `zh-CN`                        |
@@ -127,7 +141,7 @@ GitHub 不会向 Fork PR 触发的普通 `pull_request` 工作流提供仓库 Se
 - AI 输出可能出错；审查、标签、评论和发布仍由维护者负责。
 - 仓库内容会发送给配置的 API 服务；只有在项目及组织政策允许时才能使用。
 
-漏洞请按照 [SECURITY.md](SECURITY.md) 私密报告。信任边界、当前控制措施和剩余风险记录在
+漏洞请按照 [SECURITY.md](SECURITY.md) 私密报告。信任边界、控制措施和剩余风险记录在
 [THREAT_MODEL.md](THREAT_MODEL.md)。
 
 ## 开发与发布
@@ -138,8 +152,7 @@ pnpm check
 pnpm release:check
 ```
 
-`pnpm check` 检查格式、TypeScript 类型、测试和构建产物。发布 GitHub Action 时必须提交编译后的
-`dist/action.cjs`，因为 GitHub Runner 不会自动安装 JavaScript Action 的依赖。完整发布流程见
+`pnpm check` 检查格式、TypeScript 类型、测试和构建产物。完整发布流程见
 [RELEASING.md](RELEASING.md)。
 
 ## 项目治理
@@ -147,7 +160,9 @@ pnpm release:check
 - [路线图](ROADMAP.md)
 - [采用记录](ADOPTERS.md)
 - [试点指南](docs/PILOT_GUIDE.md)
+- [试点数据流程](docs/PILOT_DATA.md)
 - [指标定义](docs/METRICS.md)
+- [项目身份与差异说明](docs/DIFFERENTIATION.md)
 - [威胁模型](THREAT_MODEL.md)
 - [发布流程](RELEASING.md)
 - [贡献指南](CONTRIBUTING.md)

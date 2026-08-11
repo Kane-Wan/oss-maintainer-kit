@@ -18,7 +18,11 @@ export async function analyze(
   request: AnalysisRequest,
   options: AnalyzeOptions = {},
 ): Promise<AnalysisResult> {
-  const model = options.model ?? process.env.OSS_MAINTAINER_MODEL ?? DEFAULT_MODEL;
+  const model =
+    options.model ??
+    process.env.REPO_STEWARD_MODEL ??
+    process.env.OSS_MAINTAINER_MODEL ??
+    DEFAULT_MODEL;
   const generator = resolveGenerator(options);
   const markdown = await generator.generate({
     model,

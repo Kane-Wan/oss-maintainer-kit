@@ -5,6 +5,28 @@ the project uses Semantic Versioning for public releases.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-11
+
+### Added
+
+- Offline `pilot-summary` command with validated run records and reproducible Markdown metrics.
+- Machine-readable pilot dataset schema and an explicitly synthetic demonstration fixture.
+- Project identity and package-name collision disclosure.
+- Manual npm trusted-publishing workflow with package provenance.
+
+### Changed
+
+- Adopted the distinct product and npm distribution name Repo Steward AI / `repo-steward-ai` while
+  retaining the repository URL and legacy CLI alias.
+- Added `REPO_STEWARD_MODEL` as the preferred model override while retaining the legacy variable.
+- Updated the read-only pilot workflow and documentation to use immutable tag `v0.2.0`.
+
+### Security
+
+- Pilot metrics contain aggregate-friendly fields rather than raw prompts, diffs, issue bodies, or
+  credentials.
+- Demonstration summaries are prominently labelled as not being adoption evidence.
+
 ## [0.1.0] - 2026-08-10
 
 ### Added
@@ -32,3 +54,4 @@ the project uses Semantic Versioning for public releases.
 - Added repository security-invariant tests and documented residual risks.
 
 [0.1.0]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.1.0
+[0.2.0]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.2.0

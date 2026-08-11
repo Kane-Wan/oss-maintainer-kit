@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Kane-Wan/oss-maintainer-kit/blob/main/docs/pilot-record.schema.json",
+  "title": "Repo Steward AI pilot dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["datasetKind", "projectVersion", "runs"],
+  "properties": {
+    "datasetKind": { "enum": ["demonstration", "pilot"] },
+    "projectVersion": { "type": "string", "minLength": 1 },
+    "dateRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "string", "format": "date" },
+        "end": { "type": "string", "format": "date" }
+      }
+    },
+    "maintainers": { "type": "integer", "minimum": 0 },
+    "runs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "task", "completed"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "task": { "enum": ["pr-review", "issue-triage", "release-notes"] },
+          "completed": { "type": "boolean" },
+          "outcome": { "enum": ["accepted", "edited", "rejected", "not-rated"] },
+          "durationSeconds": { "type": "number", "minimum": 0 },
+          "estimatedMinutesSaved": { "type": "number", "minimum": 0 },
+          "blockingFalsePositive": { "type": "boolean" },
+          "repository": { "type": "string", "minLength": 1 },
+          "publicEvidenceUrl": { "type": "string", "format": "uri" }
+        }
+      }
+    }
+  }
+}

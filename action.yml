@@ -1,10 +1,10 @@
-name: OSS Maintainer Kit
+name: Repo Steward AI
 description: Review pull requests, triage issues, and draft release notes with the OpenAI Responses API.
 author: Kane-Wan
 
 branding:
-  icon: check-circle
-  color: blue
+  icon: shield
+  color: purple
 
 inputs:
   openai-api-key:

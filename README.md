@@ -1,4 +1,4 @@
-# OSS Maintainer Kit
+# Repo Steward AI
 
 [![CI](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Kane-Wan/oss-maintainer-kit/actions/workflows/codeql.yml)
@@ -6,7 +6,7 @@
 
 [简体中文](README.zh-CN.md)
 
-OSS Maintainer Kit is an open-source CLI and GitHub Action that helps maintainers:
+Repo Steward AI is an open-source CLI and GitHub Action that helps maintainers:
 
 - review pull request metadata and diffs;
 - triage issues and draft maintainer replies;
@@ -14,7 +14,11 @@ OSS Maintainer Kit is an open-source CLI and GitHub Action that helps maintainer
 
 It uses the OpenAI Responses API, treats repository content as untrusted data, and never executes code from a pull request.
 
-> Status: early preview (`v0.1.0`). Maintainer judgment is required before posting or acting on generated text.
+> Status: early preview (`v0.2.0`). Maintainer judgment is required before posting or acting on generated text.
+
+The repository URL is retained for stable links, but the distribution name is `repo-steward-ai`.
+It is unrelated to the pre-existing npm package named `oss-maintainer-kit`; see the
+[identity and differentiation note](docs/DIFFERENTIATION.md).
 
 ## Why this project exists
 
@@ -29,6 +33,15 @@ approval in [ADOPTERS.md](ADOPTERS.md), and pilot metrics use the definitions in
 
 The project currently has no verified external adopters. Honest positive, mixed, and negative
 pilot reports are welcome through the [pilot report issue form](https://github.com/Kane-Wan/oss-maintainer-kit/issues/new?template=pilot-report.yml).
+
+Pilot records can be summarized locally without an API call:
+
+```bash
+node dist/cli.js pilot-summary --input examples/pilot-runs.example.json
+```
+
+The example is marked as demonstration data and is never counted as adoption. See the
+[pilot data workflow](docs/PILOT_DATA.md).
 
 ## Quick start: CLI
 
@@ -72,7 +85,9 @@ Common optional fields include `repository`, `title`, `body`, `labels`, and `ver
 Get-Content examples/issue-triage.json | node dist/cli.js issue-triage --input -
 ```
 
-Use `--output review.md` to save Markdown and `--model <model>` to override the model. The default is `gpt-5.6-luna`, chosen for cost-sensitive maintenance automation; `OSS_MAINTAINER_MODEL` can also set the default.
+Use `--output review.md` to save Markdown and `--model <model>` to override the model. The default is
+`gpt-5.6-luna`, chosen for cost-sensitive maintenance automation. The preferred environment variable
+is `REPO_STEWARD_MODEL`; `OSS_MAINTAINER_MODEL` remains as a legacy compatibility alias.
 
 ## GitHub Action
 
@@ -96,7 +111,7 @@ jobs:
   assist:
     runs-on: ubuntu-latest
     steps:
-      - uses: Kane-Wan/oss-maintainer-kit@v0.1.0
+      - uses: Kane-Wan/oss-maintainer-kit@v0.2.0
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           github-token: ${{ github.token }}
@@ -154,7 +169,9 @@ pnpm check
 - [Roadmap](ROADMAP.md)
 - [Adopters](ADOPTERS.md)
 - [Pilot guide](docs/PILOT_GUIDE.md)
+- [Pilot data workflow](docs/PILOT_DATA.md)
 - [Metrics definitions](docs/METRICS.md)
+- [Identity and differentiation](docs/DIFFERENTIATION.md)
 - [Threat model](THREAT_MODEL.md)
 - [Release process](RELEASING.md)
 - [Contributing guide](CONTRIBUTING.md)

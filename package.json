@@ -1,7 +1,7 @@
 {
-  "name": "oss-maintainer-kit",
-  "version": "0.1.0",
-  "description": "An open-source CLI and GitHub Action for pull request review, issue triage, and release notes.",
+  "name": "repo-steward-ai",
+  "version": "0.2.0",
+  "description": "A safety-conscious CLI and GitHub Action for AI-assisted pull request review, issue triage, release notes, and verifiable maintainer pilots.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,6 +12,7 @@
     }
   },
   "bin": {
+    "repo-steward": "./dist/cli.js",
     "oss-maintainer": "./dist/cli.js"
   },
   "files": [
@@ -21,6 +22,7 @@
     "README.zh-CN.md",
     "CHANGELOG.md",
     "SECURITY.md",
+    "docs",
     "LICENSE"
   ],
   "scripts": {
@@ -42,6 +44,8 @@
     "pull-request-review",
     "issue-triage",
     "release-notes",
+    "pilot-metrics",
+    "repo-steward",
     "openai"
   ],
   "author": "Kane-Wan",

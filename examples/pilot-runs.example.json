@@ -1,0 +1,37 @@
+{
+  "datasetKind": "demonstration",
+  "projectVersion": "0.2.0",
+  "dateRange": {
+    "start": "2026-08-01",
+    "end": "2026-08-10"
+  },
+  "maintainers": 1,
+  "runs": [
+    {
+      "id": "demo-pr-1",
+      "task": "pr-review",
+      "completed": true,
+      "outcome": "edited",
+      "durationSeconds": 18,
+      "estimatedMinutesSaved": 4,
+      "repository": "example/demo-repository"
+    },
+    {
+      "id": "demo-issue-1",
+      "task": "issue-triage",
+      "completed": true,
+      "outcome": "accepted",
+      "durationSeconds": 12,
+      "estimatedMinutesSaved": 3,
+      "repository": "example/demo-repository"
+    },
+    {
+      "id": "demo-release-1",
+      "task": "release-notes",
+      "completed": false,
+      "outcome": "not-rated",
+      "blockingFalsePositive": false,
+      "repository": "example/demo-repository"
+    }
+  ]
+}

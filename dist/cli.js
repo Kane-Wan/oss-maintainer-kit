@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 import {
+  VERSION,
   analyze,
-  createAnalysisRequest
-} from "./chunk-5N2BGQQX.js";
+  createAnalysisRequest,
+  formatPilotSummary,
+  parsePilotDataset,
+  summarizePilot
+} from "./chunk-GDJ7SAON.js";
 
 // src/cli.ts
 import { readFile, writeFile } from "fs/promises";
@@ -46,24 +50,28 @@ function payloadToRequest(task, payload, language) {
 }
 
 // src/cli.ts
-var HELP = `oss-maintainer <task> [options]
+var HELP = `repo-steward <command> [options]
 
-Tasks:
+Analysis commands:
   pr-review       Review pull request metadata and a diff
   issue-triage    Triage an issue and draft a maintainer reply
   release-notes   Turn a change list into release notes
 
+Evidence command:
+  pilot-summary   Aggregate privacy-conscious pilot run records without an API call
+
 Options:
   -i, --input <path>       JSON input path, or - for stdin (default: -)
   -o, --output <path>      Write Markdown to a file instead of stdout
-      --model <name>       OpenAI model (default: OSS_MAINTAINER_MODEL or gpt-5.6-luna)
+      --model <name>       OpenAI model (default: REPO_STEWARD_MODEL or gpt-5.6-luna)
       --language <value>   auto, en, or zh-CN (default: auto)
   -h, --help               Show this help
   -v, --version            Show the package version
 
 Environment:
   OPENAI_API_KEY           Required for live analysis
-  OSS_MAINTAINER_MODEL     Optional model override
+  REPO_STEWARD_MODEL       Optional model override
+  OSS_MAINTAINER_MODEL     Legacy model override
 `;
 async function readStdin() {
   const chunks = [];
@@ -98,27 +106,36 @@ async function main() {
     return;
   }
   if (values.version) {
-    output.write("0.1.0\n");
+    output.write(`${VERSION}
+`);
     return;
   }
-  const task = parseTask(positionals[0]);
-  const language = parseLanguage(values.language);
   const raw = values.input === "-" ? await readStdin() : await readFile(values.input, "utf8");
-  const request = payloadToRequest(task, JSON.parse(raw), language);
-  const result = await analyze(request, { model: values.model });
+  const command = positionals[0];
+  let markdown;
+  if (command === "pilot-summary") {
+    const dataset = parsePilotDataset(JSON.parse(raw));
+    markdown = formatPilotSummary(summarizePilot(dataset));
+  } else {
+    const task = parseTask(command);
+    const language = parseLanguage(values.language);
+    const request = payloadToRequest(task, JSON.parse(raw), language);
+    const result = await analyze(request, { model: values.model });
+    markdown = result.markdown;
+  }
   if (values.output) {
-    await writeFile(values.output, `${result.markdown}
+    await writeFile(values.output, `${markdown}
 `, "utf8");
     output.write(`Wrote ${values.output}
 `);
     return;
   }
-  output.write(`${result.markdown}
+  output.write(`${markdown}
 `);
 }
 main().catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`oss-maintainer: ${message}
+  process.stderr.write(`repo-steward: ${message}
 `);
   process.exitCode = 1;
 });

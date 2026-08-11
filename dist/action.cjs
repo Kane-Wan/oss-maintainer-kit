@@ -35309,7 +35309,7 @@ function resolveGenerator(options) {
   return new OpenAITextGenerator(apiKey);
 }
 async function analyze(request2, options = {}) {
-  const model = options.model ?? process.env.OSS_MAINTAINER_MODEL ?? DEFAULT_MODEL;
+  const model = options.model ?? process.env.REPO_STEWARD_MODEL ?? process.env.OSS_MAINTAINER_MODEL ?? DEFAULT_MODEL;
   const generator = resolveGenerator(options);
   const markdown = await generator.generate({
     model,
@@ -35481,7 +35481,7 @@ async function run() {
   });
   setOutput("task", result.task);
   setOutput("result", result.markdown);
-  await summary.addHeading("OSS Maintainer Kit").addRaw(result.markdown).write();
+  await summary.addHeading("Repo Steward AI").addRaw(result.markdown).write();
   if (getBooleanInput("post-comment")) {
     if (!commentNumber) throw new Error("This task has no issue or pull request to comment on.");
     if (!token) throw new Error("github-token is required when post-comment is true.");

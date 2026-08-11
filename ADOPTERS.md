@@ -1,6 +1,6 @@
 # Adopters
 
-OSS Maintainer Kit publishes only opt-in, verifiable adoption evidence.
+Repo Steward AI publishes only opt-in, verifiable adoption evidence.
 
 ## Public adopters
 

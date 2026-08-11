@@ -12,11 +12,15 @@ The roadmap is evidence-driven. Priorities may change after feedback from real m
 - [x] Offline unit tests, CI, CodeQL, and release checks
 - [x] Read-only pilot workflow and `pull_request_target` opt-in guard
 - [x] Threat model, pilot metrics, and adoption-evidence process
-- [ ] Publish the first immutable GitHub Release
+- [x] Publish the first immutable GitHub Release
 - [ ] Complete npm ownership and authentication setup
 
-## v0.2 - Pilot repositories
+## v0.2 - Evidence-ready pilots
 
+- [x] Adopt a distinct distribution name and disclose the pre-existing package-name collision
+- [x] Add structured pilot run records and an offline metrics summary command
+- [x] Mark synthetic demonstration data so it cannot be mistaken for adoption evidence
+- [x] Prepare manual npm trusted publishing with provenance
 - [ ] Run read-only pilots in at least five public repositories
 - [ ] Publish opt-in pilot reports with maintainer approval
 - [ ] Add configurable repository review rules

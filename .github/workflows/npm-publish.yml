@@ -1,0 +1,33 @@
+name: Publish npm package
+
+on:
+  workflow_dispatch:
+    inputs:
+      npm-tag:
+        description: npm distribution tag
+        required: true
+        default: latest
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    environment: npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.34.5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm release:check
+      - run: npm install --global npm@latest
+      - name: Publish with provenance
+        run: npm publish --access public --provenance --tag "${{ inputs.npm-tag }}"

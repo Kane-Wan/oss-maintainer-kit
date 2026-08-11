@@ -43,4 +43,30 @@ describe("analyze", () => {
 
     if (previous) process.env.OPENAI_API_KEY = previous;
   });
+
+  it("prefers the Repo Steward model environment variable over the legacy alias", async () => {
+    const previousPreferred = process.env.REPO_STEWARD_MODEL;
+    const previousLegacy = process.env.OSS_MAINTAINER_MODEL;
+    process.env.REPO_STEWARD_MODEL = "preferred-model";
+    process.env.OSS_MAINTAINER_MODEL = "legacy-model";
+
+    try {
+      const generator: TextGenerator = {
+        async generate() {
+          return "# Issue triage";
+        },
+      };
+      const result = await analyze(
+        { task: "issue-triage", title: "Bug", content: "Steps" },
+        { generator },
+      );
+
+      expect(result.model).toBe("preferred-model");
+    } finally {
+      if (previousPreferred === undefined) delete process.env.REPO_STEWARD_MODEL;
+      else process.env.REPO_STEWARD_MODEL = previousPreferred;
+      if (previousLegacy === undefined) delete process.env.OSS_MAINTAINER_MODEL;
+      else process.env.OSS_MAINTAINER_MODEL = previousLegacy;
+    }
+  });
 });
