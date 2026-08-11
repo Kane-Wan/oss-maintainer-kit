@@ -8,14 +8,15 @@ on:
         required: true
         default: latest
 
-permissions:
-  contents: read
-  id-token: write
+permissions: read-all
 
 jobs:
   publish:
     environment: npm
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
@@ -28,6 +29,6 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - run: pnpm release:check
-      - run: npm install --global npm@latest
+      - run: npm install --global npm@11.12.1
       - name: Publish with provenance
         run: npm publish --access public --tag "${{ inputs.npm-tag }}"

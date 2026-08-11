@@ -2,7 +2,7 @@
 
 > Deterministic checks can detect missing sections and unsafe phrases, but they do not replace maintainer judgment or verify that recorded outputs came from a named model.
 
-- Project version: 0.3.0
+- Project version: 0.3.1
 - Cases: 4
 - Candidate output pass rate: 100.0% (3/3)
 - Negative-control detection rate: 100.0% (1/1)

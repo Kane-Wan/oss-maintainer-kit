@@ -565,7 +565,7 @@ function formatPilotSummary(summary) {
 }
 
 // src/version.ts
-var VERSION = "0.3.0";
+var VERSION = "0.3.1";
 
 // src/github/format.ts
 var MAX_PATCH_CHARS_PER_FILE = 8e3;
@@ -638,4 +638,4 @@ export {
   resolveTask,
   createAnalysisRequest
 };
-//# sourceMappingURL=chunk-T76MMFPG.js.map
+//# sourceMappingURL=chunk-3Q3MB5VV.js.map

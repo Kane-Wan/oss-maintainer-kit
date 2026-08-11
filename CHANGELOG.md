@@ -5,6 +5,15 @@ the project uses Semantic Versioning for public releases.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-08-11
+
+### Security
+
+- Upgraded the transitive `esbuild` toolchain to `0.28.1`, which includes the fix for
+  `GHSA-g7r4-m6w7-qqqr`.
+- Moved GitHub workflow write permissions from workflow scope to the jobs that require them.
+- Pinned the npm trusted-publishing bootstrap to npm `11.12.1`.
+
 ## [0.3.0] - 2026-08-11
 
 ### Added
@@ -80,3 +89,4 @@ the project uses Semantic Versioning for public releases.
 [0.1.0]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.1.0
 [0.2.0]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.2.0
 [0.3.0]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.3.0
+[0.3.1]: https://github.com/Kane-Wan/oss-maintainer-kit/releases/tag/v0.3.1

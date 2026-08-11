@@ -16,7 +16,7 @@ Copy [`examples/maintainer.yml`](../examples/maintainer.yml) to
 `.github/workflows/maintainer-assistant.yml` and add `OPENAI_API_KEY` as an Actions secret.
 
 The example writes results to the job summary. It does not post comments or modify repository
-content. Keep the immutable `v0.3.0` reference during the pilot and review upgrades explicitly.
+content. Keep the immutable `v0.3.1` reference during the pilot and review upgrades explicitly.
 
 ## Suggested 14-day pilot
 

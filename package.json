@@ -1,6 +1,6 @@
 {
   "name": "repo-steward-ai",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A safety-conscious CLI and GitHub Action for AI-assisted pull request review, issue triage, release notes, and verifiable maintainer pilots.",
   "type": "module",
   "main": "./dist/index.js",

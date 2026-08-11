@@ -1,6 +1,6 @@
 {
   "datasetKind": "demonstration",
-  "projectVersion": "0.3.0",
+  "projectVersion": "0.3.1",
   "description": "Curated outputs and a deliberately defective negative control that exercise the offline evaluation harness. These are not live model results.",
   "cases": [
     {

@@ -15,7 +15,7 @@ Repo Steward AI is an open-source CLI and GitHub Action that helps maintainers:
 
 It uses the OpenAI Responses API, treats repository content as untrusted data, and never executes code from a pull request.
 
-> Status: early preview (`v0.3.0`). Maintainer judgment is required before posting or acting on generated text.
+> Status: early preview (`v0.3.1`). Maintainer judgment is required before posting or acting on generated text.
 
 The repository URL is retained for stable links, but the distribution name is `repo-steward-ai`.
 It is unrelated to the pre-existing npm package named `oss-maintainer-kit`; see the
@@ -131,7 +131,7 @@ jobs:
   assist:
     runs-on: ubuntu-latest
     steps:
-      - uses: Kane-Wan/oss-maintainer-kit@v0.3.0
+      - uses: Kane-Wan/oss-maintainer-kit@v0.3.1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           github-token: ${{ github.token }}
