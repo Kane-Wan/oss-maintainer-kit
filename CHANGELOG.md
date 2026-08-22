@@ -5,6 +5,14 @@ the project uses Semantic Versioning for public releases.
 
 ## [Unreleased]
 
+### Maintenance
+
+- Unified all CodeQL workflow steps on the same pinned `v4.37.7` commit so Dependabot updates
+  cannot leave incompatible action versions in one workflow.
+- Grouped future CodeQL action updates into one Dependabot pull request.
+- Enabled the repository dependency graph and Dependabot vulnerability alerts so dependency review
+  can run on pull requests.
+
 ## [0.3.1] - 2026-08-11
 
 ### Security

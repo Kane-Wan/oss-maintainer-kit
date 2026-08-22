@@ -60,4 +60,27 @@ describe("repository security invariants", () => {
     expect(workflows).toContain("publish_results: true");
     expect(workflows).toContain("fail-on-severity: high");
   });
+
+  it("keeps every CodeQL action step on one compatible release", () => {
+    const codeql = readFileSync(
+      new URL("../.github/workflows/codeql.yml", import.meta.url),
+      "utf8",
+    );
+    const scorecard = readFileSync(
+      new URL("../.github/workflows/scorecard.yml", import.meta.url),
+      "utf8",
+    );
+    const references = `${codeql}\n${scorecard}`.match(
+      /github\/codeql-action\/[\w-]+@([0-9a-f]{40})/g,
+    );
+    expect(references).toHaveLength(3);
+    expect(new Set(references?.map((reference) => reference.split("@")[1])).size).toBe(1);
+  });
+
+  it("groups CodeQL action updates in Dependabot", () => {
+    const dependabot = readFileSync(new URL("../.github/dependabot.yml", import.meta.url), "utf8");
+
+    expect(dependabot).toContain("codeql-action:");
+    expect(dependabot).toContain("github/codeql-action");
+  });
 });
